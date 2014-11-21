@@ -27,9 +27,11 @@ except KeyError:
 {{range $key, $value := .}}
 
 # {{ $value.Name }}
-{{ with $tag := "latest" }}
-
-client.write("/backends/{{ $value.Image.Registry }}/{{ $value.Image.Repository}}/{{ $tag }}/{{ $local.Env.HOST_IP }}", "{{ $value.Addresses }}", ttl=15)
-
+{{ $tag := "latest" }}
+{{ if $value.Image.Tag }}
+{{ $tag := $value.Image.Tag }}
 {{end}}
+client.write("/backends/{{ $value.Image.Registry }}/{{ $value.Image.Repository }}/{{ $tag }}/{{ $local.Env.HOST_IP }}/{{ printf "%.*s" 12 $value.ID }}", "{{ $value.Addresses }}", ttl=15)
+
+
 {{end}}
