@@ -25,17 +25,11 @@ except KeyError:
 
 {{ $local := . }}
 {{range $key, $value := .}}
-{{ $addrLen := len $value.Addresses }}
-{{ if eq $addrLen 1 }}
-{{ with $address := index $value.Addresses 0 }}
 
-{{ if $address.HostPort}}
 # {{ $value.Name }}
+{{ with $tag := "latest" }}
 
-client.write("/backends/{{ $value.Image.Repository}}/{{printf "%.*s" 12 $value.ID}}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
-client.write("/backends/{{ $value.Image.Repository}}/port", "{{ $address.Port }}", ttl=15)
+client.write("/backends/{{ $value.Image.Registry }}/{{ $value.Image.Repository}}/{{ $tag }}/{{ $local.Env.HOST_IP }}", "{{ $value.Addresses }}", ttl=15)
 
-{{ end }}
-{{ end }}
 {{end}}
 {{end}}

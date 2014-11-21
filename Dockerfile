@@ -1,8 +1,14 @@
 FROM ubuntu:14.04
-MAINTAINER Jason Wilder jwilder@litl.com
+MAINTAINER Yannis Panousis ipanousis156@gmail.com
 
 RUN apt-get update
-RUN apt-get install -y wget python python-pip python-dev libssl-dev libffi-dev bash
+RUN apt-get install -y wget python python-pip python-dev libssl-dev libffi-dev bash openssh-server openssh-client
+
+RUN echo 'root:root' | chpasswd
+RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+RUN service ssh restart
 
 RUN mkdir /app
 WORKDIR /app
@@ -15,5 +21,7 @@ RUN pip install python-etcd
 ADD . /app
 
 ENV DOCKER_HOST unix:///var/run/docker.sock
+
+EXPOSE 22
 
 CMD docker-gen -interval 10 -watch -notify "python /tmp/register.py" etcd.tmpl /tmp/register.py
