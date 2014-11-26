@@ -35,12 +35,13 @@ except KeyError:
 running_container = {
                       "host"       : "{{ $local.Env.HOST_IP }}",
                       "container_id" : "{{ printf "%.*s" 24 $value.ID }}",
+                      "name"       : "{{ $value.Name }}",
                       "registry"   : "{{ $value.Image.Registry }}",
                       "repository" : "{{ $value.Image.Repository }}",
                       "tag"        : "{{ $tag }}",
                       "addresses"  : "{{ $value.Addresses }}"
                     }
 
-client.write("/backends/{{ $local.Env.HOST_IP }}/{{ printf "%.*s" 24 $value.ID }}", running_container, ttl=15)
+client.write("/backends/{{ $local.Env.HOST_IP }}/{{ $value.Name }}", running_container, ttl=15)
 
 {{end}}
