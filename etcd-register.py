@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-import re
 import os
 import etcd
+import yaml # yaml to de-serialise JSON, due to JSON de-serialising as unicode rather than string
 import json
 
 etcd_host = os.environ['ETCD_HOST']
@@ -19,7 +19,8 @@ try:
 except KeyError:
   client.write("/backends", None, dir=True)
 
-running_containers = json.loads(open('/tmp/containers.json','r').read())['containers']
+running_containers_string = open('/tmp/containers.json','r').read()
+running_containers = yaml.load(running_containers_string)['containers']
 
 for running_container in running_containers:
   client.write("/backends/%s/%s" % (running_container['host'], running_container['name']), running_container, ttl=15)
