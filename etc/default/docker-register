@@ -1,0 +1,2 @@
+NOTIFY="python /etcd-register.py"
+INTERVAL=10
